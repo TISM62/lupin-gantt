@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)file:///Users/grantwellwood/Downloads/lupin_gantt_5.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Lupin Roast – Project Gantt</title>
+<link href="./Lupin Roast – Project Gantt_files/css2" rel="stylesheet">
+<style>
+  :root {
+    --navy:    #1a2b4a;
+    --blue:    #2563a8;
+    --blue-lt: #3b7fd4;
+    --green:   #2d8a4e;
+    --red:     #c0392b;
+    --amber:   #e67e22;
+    --bg:      #f4f6fa;
+    --card:    #ffffff;
+    --border:  #dde3ee;
+    --text:    #1a2b4a;
+    --muted:   #7a8aaa;
+    --wkend:   #eceef4;
+    --phase:   #e8edf8;
+    --row-alt: #f9fafc;
+    --bar-h:   18px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--navy);
+    color: #fff;
+    padding: 16px 20px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 3px solid var(--blue);
+  }
+  header h1 {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    opacity: .7;
+    margin-bottom: 2px;
+  }
+  header h2 {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -.01em;
+  }
+  .header-meta {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .meta-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    color: rgba(255,255,255,.85);
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: .04em;
+  }
+  .meta-pill span { color: #fff; font-weight: 500; }
+
+  /* ── Layout ── */
+  .app { display: flex; flex-direction: column; }
+
+  /* ── Tab bar ── */
+  .tabs {
+    display: flex;
+    background: var(--navy);
+    padding: 0 20px;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+  }
+  .tab {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.5);
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .tab:hover { color: rgba(255,255,255,.85); }
+  .tab.active { color: #fff; border-bottom-color: var(--amber); }
+
+  /* ── View panels ── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ── Gantt ── */
+  .gantt-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0;
+  }
+
+  table.gantt {
+    border-collapse: collapse;
+    min-width: 100%;
+    font-size: 12px;
+  }
+
+  /* Sticky left columns */
+  .gantt .col-id   { width: 36px; min-width: 36px; }
+  .gantt .col-name { width: 180px; min-width: 160px; }
+
+  .gantt thead th {
+    position: sticky;
+    top: 0;
+    background: var(--navy);
+    color: rgba(255,255,255,.7);
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 6px 4px;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,.08);
+    white-space: nowrap;
+    z-index: 10;
+  }
+  .gantt thead th.col-id,
+  .gantt thead th.col-name {
+    position: sticky;
+    z-index: 20;
+    text-align: left;
+    padding-left: 10px;
+  }
+  .gantt thead th.col-id   { left: 0; }
+  .gantt thead th.col-name { left: 36px; }
+
+  /* Week row */
+  .gantt thead tr.week-row th {
+    background: #253a60;
+    font-size: 9px;
+    color: rgba(255,255,255,.6);
+    padding: 4px 2px;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+  }
+  .gantt thead tr.week-row th.col-id,
+  .gantt thead tr.week-row th.col-name {
+    background: #253a60;
+  }
+  /* Day row */
+  .gantt thead tr.day-row th {
+    font-size: 8px;
+    padding: 3px 1px;
+    border-bottom: 2px solid rgba(255,255,255,.15);
+  }
+  .gantt thead tr.day-row th.weekend {
+    background: #1a2b4a;
+    color: rgba(255,255,255,.25);
+  }
+
+  /* Body rows */
+  .gantt tbody tr.phase-row td {
+    background: var(--phase);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--blue);
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+  }
+  .gantt tbody tr.phase-row td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+  }
+
+  .gantt tbody tr.task-row td {
+    padding: 0;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    height: 32px;
+  }
+  .gantt tbody tr.task-row:nth-child(even) td { background: var(--row-alt); }
+  .gantt tbody tr.task-row:hover td { background: #eef2fa; }
+
+  .gantt tbody tr.task-row td.col-id {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: var(--navy);
+    color: rgba(255,255,255,.7);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    text-align: center;
+    padding: 0;
+  }
+  .gantt tbody tr.task-row:hover td.col-id { background: var(--blue); }
+
+  .gantt tbody tr.task-row td.col-name {
+    position: sticky;
+    left: 36px;
+    z-index: 5;
+    padding: 0 10px;
+    background: var(--card);
+    font-size: 11px;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+    border-right: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .gantt tbody tr.task-row:nth-child(even) td.col-name { background: var(--row-alt); }
+  .gantt tbody tr.task-row:hover td.col-name { background: #eef2fa; }
+
+  .task-name-inner {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .milestone-tag {
+    display: inline-block;
+    width: 8px; height: 8px;
+    background: var(--red);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+  }
+
+  /* Day cells */
+  .gantt tbody tr.task-row td.day-cell {
+    padding: 6px 1px;
+    min-width: 22px;
+    width: 22px;
+  }
+  .gantt tbody tr.task-row td.day-cell.weekend {
+    background: var(--wkend) !important;
+  }
+
+  .bar-wrap {
+    height: var(--bar-h);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-bg {
+    position: absolute;
+    inset: 0;
+    background: var(--blue);
+    border-radius: 3px;
+  }
+  .bar-progress {
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    background: var(--green);
+    border-radius: 3px 0 0 3px;
+    transition: width .3s ease;
+  }
+  .bar-milestone {
+    position: absolute;
+    inset: 0;
+    background: var(--red);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: #fff;
+  }
+
+  /* ── Edit panel ── */
+  .edit-view {
+    padding: 16px;
+  }
+  .edit-header {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .task-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .task-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid transparent;
+    transition: background .1s;
+  }
+  .task-card-header:hover { background: var(--bg); }
+  .task-card-header.open { border-bottom-color: var(--border); }
+
+  .task-card-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: #fff;
+    background: var(--navy);
+    width: 24px; height: 24px;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .task-card-name {
+    font-size: 13px;
+    font-weight: 500;
+    flex: 1;
+  }
+  .task-card-dur {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--blue);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .task-card-ms {
+    width: 8px; height: 8px;
+    background: var(--red);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+  }
+
+  .task-card-body {
+    display: none;
+    padding: 14px;
+    background: #fafbfe;
+  }
+  .task-card-body.open { display: block; }
+
+  .field-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .field-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--muted);
+    width: 90px;
+    flex-shrink: 0;
+  }
+  .field-value {
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  input[type="number"], input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input[type="number"] {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--blue);
+    background: #fff;
+    border: 2px solid var(--blue);
+    border-radius: 6px;
+    padding: 6px 10px;
+    width: 80px;
+    text-align: center;
+  }
+  input[type="number"]:focus {
+    outline: none;
+    border-color: var(--blue-lt);
+    box-shadow: 0 0 0 3px rgba(37,99,168,.15);
+  }
+
+  input[type="range"] {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--green);
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer;
+  }
+  .pct-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--green);
+    width: 36px;
+    text-align: right;
+  }
+
+  .deps-list {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* ── Summary view ── */
+  .summary-view { padding: 16px; }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .stat-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .stat-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .progress-bar-outer {
+    background: var(--border);
+    border-radius: 4px;
+    height: 8px;
+    margin-top: 6px;
+    overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 100%;
+    background: var(--green);
+    border-radius: 4px;
+    transition: width .4s ease;
+  }
+
+  .milestone-list { margin-top: 4px; }
+  .milestone-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .milestone-item:last-child { border-bottom: none; }
+  .ms-diamond {
+    width: 10px; height: 10px;
+    background: var(--red);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+  }
+  .ms-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .ms-name { flex: 1; font-weight: 500; }
+  .ms-done {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--green);
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    gap: 14px;
+    padding: 10px 14px;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+    font-size: 10px;
+    color: var(--muted);
+    position: sticky;
+    bottom: 0;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-swatch {
+    width: 14px; height: 10px;
+    border-radius: 2px;
+  }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--navy);
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: all .25s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── Print button ── */
+  .print-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.25);
+    color: rgba(255,255,255,.85);
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+  .print-btn:hover { background: rgba(255,255,255,.2); }
+
+  /* ── Print styles ── */
+  /* ── Save / Load bar ── */
+  .data-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #253a60;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+    flex-wrap: wrap;
+  }
+  .data-bar-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.4);
+    margin-right: 2px;
+  }
+  .data-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .04em;
+    padding: 5px 12px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .data-btn:hover { opacity: .82; }
+  .data-btn.save { background: var(--amber); color: #fff; }
+  .data-btn.load { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: rgba(255,255,255,.85); }
+  .data-btn.reset { background: transparent; border: 1px solid rgba(255,80,80,.4); color: rgba(255,100,100,.8); font-size: 9px; margin-left: auto; }
+  #load-input { display: none; }
+  @media print { .data-bar { display: none !important; } }
+
+  @media print {
+    @page { size: A3 landscape; margin: 8mm; }
+
+    body { background: #fff; }
+
+    header {
+      position: static;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      background: #1a2b4a !important;
+      color: #fff !important;
+    }
+
+    .tabs, .legend, .toast, .print-btn { display: none !important; }
+
+    /* Print whichever view is active, hide the others */
+    .view { display: none !important; }
+    .view.active { display: block !important; }
+
+    .gantt-wrap { overflow: visible; }
+
+    /* Force background colours to print */
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    /* Remove sticky positioning - breaks print layout */
+    .gantt thead th,
+    .gantt tbody tr.task-row td.col-id,
+    .gantt tbody tr.task-row td.col-name {
+      position: static !important;
+    }
+
+    /* Hide the absolute-positioned bar divs - use cell bg instead */
+    .bar-wrap, .bar-bg, .bar-progress, .bar-milestone { display: none !important; }
+
+    /* Bar cells: colour the TD directly via data attributes */
+    td.day-cell[data-bar="1"] {
+      background: #2563a8 !important;
+    }
+    td.day-cell[data-bar="1"][data-progress="1"] {
+      background: #2d8a4e !important;
+    }
+    td.day-cell[data-bar="1"][data-milestone="1"] {
+      background: #c0392b !important;
+    }
+    td.day-cell[data-bar="1"][data-milestone="1"]::after {
+      content: "◆";
+      color: #fff;
+      font-size: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+    td.day-cell.weekend {
+      background: #eceef4 !important;
+    }
+
+    /* Phase rows */
+    .gantt tbody tr.phase-row td {
+      background: #e8edf8 !important;
+    }
+
+    /* Header */
+    .gantt thead th {
+      background: #1a2b4a !important;
+      color: #fff !important;
+    }
+    .gantt thead tr.week-row th {
+      background: #253a60 !important;
+    }
+    .gantt thead tr.day-row th.weekend {
+      background: #1a2b4a !important;
+    }
+
+    /* Shrink columns to fit A3 */
+    .gantt .col-name { width: 120px !important; min-width: 120px !important; }
+    .gantt tbody tr.task-row td.day-cell { min-width: 14px !important; width: 14px !important; }
+    table.gantt { font-size: 7px !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Project Gantt</h1>
+  <h2>Ambex YM Roaster – Lupin Roast Feasibility Study</h2>
+  <div class="header-meta">
+    <div class="meta-pill">Start <span id="hdr-start">02 Jun 2025</span></div>
+    <div class="meta-pill">End <span id="hdr-end">25 Aug 2025</span></div>
+    <div class="meta-pill">Tasks <span id="hdr-tasks">32</span></div>
+    <div class="meta-pill">Progress <span id="hdr-pct">0%</span></div>
+    <button class="print-btn" onclick="window.print()">⎙ Print / Save PDF</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showView(&#39;gantt&#39;)">Gantt</div>
+  <div class="tab" onclick="showView(&#39;edit&#39;)">Edit Tasks</div>
+  <div class="tab" onclick="showView(&#39;summary&#39;)">Summary</div>
+</div>
+
+<div class="data-bar">
+  <span class="data-bar-label">Progress data</span>
+  <button class="data-btn save" onclick="saveData()">⬇ Save</button>
+  <button class="data-btn load" onclick="document.getElementById(&#39;load-input&#39;).click()">⬆ Load</button>
+  <input type="file" id="load-input" accept=".json" onchange="loadData(event)">
+  <button class="data-btn reset" onclick="resetData()">↺ Reset</button>
+</div>
+
+<div class="app">
+
+  <!-- GANTT VIEW -->
+  <div id="view-gantt" class="view active">
+    <div class="gantt-wrap">
+      <table class="gantt" id="gantt-table">
+        <thead id="gantt-head"><tr class="week-row">
+    <th class="col-id"></th>
+    <th class="col-name"></th><th colspan="7" style="text-align:left;padding-left:4px">Wk 1 · 2 Jun</th><th colspan="7" style="text-align:left;padding-left:4px">Wk 2 · 9 Jun</th><th colspan="7" style="text-align:left;padding-left:4px">Wk 3 · 16 Jun</th><th colspan="7" style="text-align:left;padding-left:4px">Wk 4 · 23 Jun</th><th colspan="7" style="text-align:left;padding-left:4px">Wk 5 · 30 Jun</th><th colspan="7" style="text-align:left;padding-left:4px">Wk 6 · 7 Jul</th><th colspan="7" style="text-align:left;padding-left:4px">Wk 7 · 14 Jul</th><th colspan="7" style="text-align:left;padding-left:4px">Wk 8 · 21 Jul</th><th colspan="7" style="text-align:left;padding-left:4px">Wk 9 · 28 Jul</th><th colspan="7" style="text-align:left;padding-left:4px">Wk 10 · 4 Aug</th><th colspan="7" style="text-align:left;padding-left:4px">Wk 11 · 11 Aug</th><th colspan="7" style="text-align:left;padding-left:4px">Wk 12 · 18 Aug</th><th colspan="7" style="text-align:left;padding-left:4px">Wk 13 · 25 Aug</th><th colspan="7" style="text-align:left;padding-left:4px">Wk 14 · 1 Sep</th></tr><tr class="day-row">
+    <th class="col-id">ID</th>
+    <th class="col-name">Task</th><th class="">Mo</th><th class="">Tu</th><th class="">We</th><th class="">Th</th><th class="">Fr</th><th class="weekend">Sa</th><th class="weekend">Su</th><th class="">Mo</th><th class="">Tu</th><th class="">We</th><th class="">Th</th><th class="">Fr</th><th class="weekend">Sa</th><th class="weekend">Su</th><th class="">Mo</th><th class="">Tu</th><th class="">We</th><th class="">Th</th><th class="">Fr</th><th class="weekend">Sa</th><th class="weekend">Su</th><th class="">Mo</th><th class="">Tu</th><th class="">We</th><th class="">Th</th><th class="">Fr</th><th class="weekend">Sa</th><th class="weekend">Su</th><th class="">Mo</th><th class="">Tu</th><th class="">We</th><th class="">Th</th><th class="">Fr</th><th class="weekend">Sa</th><th class="weekend">Su</th><th class="">Mo</th><th class="">Tu</th><th class="">We</th><th class="">Th</th><th class="">Fr</th><th class="weekend">Sa</th><th class="weekend">Su</th><th class="">Mo</th><th class="">Tu</th><th class="">We</th><th class="">Th</th><th class="">Fr</th><th class="weekend">Sa</th><th class="weekend">Su</th><th class="">Mo</th><th class="">Tu</th><th class="">We</th><th class="">Th</th><th class="">Fr</th><th class="weekend">Sa</th><th class="weekend">Su</th><th class="">Mo</th><th class="">Tu</th><th class="">We</th><th class="">Th</th><th class="">Fr</th><th class="weekend">Sa</th><th class="weekend">Su</th><th class="">Mo</th><th class="">Tu</th><th class="">We</th><th class="">Th</th><th class="">Fr</th><th class="weekend">Sa</th><th class="weekend">Su</th><th class="">Mo</th><th class="">Tu</th><th class="">We</th><th class="">Th</th><th class="">Fr</th><th class="weekend">Sa</th><th class="weekend">Su</th><th class="">Mo</th><th class="">Tu</th><th class="">We</th><th class="">Th</th><th class="">Fr</th><th class="weekend">Sa</th><th class="weekend">Su</th><th class="">Mo</th><th class="">Tu</th><th class="">We</th><th class="">Th</th><th class="">Fr</th><th class="weekend">Sa</th><th class="weekend">Su</th><th class="">Mo</th><th class="">Tu</th><th class="">We</th><th class="">Th</th><th class="">Fr</th><th class="weekend">Sa</th><th class="weekend">Su</th></tr></thead>
+        <tbody id="gantt-body"><tr class="phase-row">
+        <td colspan="100">1. Assess Lupin Roast Concept</td>
+      </tr><tr class="task-row">
+      <td class="col-id">1</td>
+      <td class="col-name" onclick="jumpToEdit(1)">
+        <div class="task-name-inner">
+          <div class="milestone-tag"></div>
+          <span>Initiate project</span>
+        </div>
+      </td><td class="day-cell" data-bar="1" data-milestone="1"><div class="bar-wrap"><div class="bar-milestone">◆</div></div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="phase-row">
+        <td colspan="100">2. Site Preparation</td>
+      </tr><tr class="task-row">
+      <td class="col-id">2</td>
+      <td class="col-name" onclick="jumpToEdit(2)">
+        <div class="task-name-inner">
+          
+          <span>Confirm electrical circuit specs</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">3</td>
+      <td class="col-name" onclick="jumpToEdit(3)">
+        <div class="task-name-inner">
+          
+          <span>Install dedicated circuit</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">4</td>
+      <td class="col-name" onclick="jumpToEdit(4)">
+        <div class="task-name-inner">
+          
+          <span>Confirm gas supply pressure</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">5</td>
+      <td class="col-name" onclick="jumpToEdit(5)">
+        <div class="task-name-inner">
+          
+          <span>Install gas line</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">6</td>
+      <td class="col-name" onclick="jumpToEdit(6)">
+        <div class="task-name-inner">
+          
+          <span>Connect gas &amp; electrical</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">7</td>
+      <td class="col-name" onclick="jumpToEdit(7)">
+        <div class="task-name-inner">
+          
+          <span>Install exhaust ducting</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">8</td>
+      <td class="col-name" onclick="jumpToEdit(8)">
+        <div class="task-name-inner">
+          <div class="milestone-tag"></div>
+          <span>Site Preparations complete</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1" data-milestone="1"><div class="bar-wrap"><div class="bar-milestone">◆</div></div></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">9</td>
+      <td class="col-name" onclick="jumpToEdit(9)">
+        <div class="task-name-inner">
+          
+          <span>Frame focussing question &amp; hypotheses</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">10</td>
+      <td class="col-name" onclick="jumpToEdit(10)">
+        <div class="task-name-inner">
+          
+          <span>Review manual</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">11</td>
+      <td class="col-name" onclick="jumpToEdit(11)">
+        <div class="task-name-inner">
+          
+          <span>Identify control variables</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">12</td>
+      <td class="col-name" onclick="jumpToEdit(12)">
+        <div class="task-name-inner">
+          
+          <span>Draft DoE schedule</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">13</td>
+      <td class="col-name" onclick="jumpToEdit(13)">
+        <div class="task-name-inner">
+          
+          <span>Draft SOP and JSA</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">14</td>
+      <td class="col-name" onclick="jumpToEdit(14)">
+        <div class="task-name-inner">
+          <div class="milestone-tag"></div>
+          <span>DoE Preparations complete</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend" data-milestone="1"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="phase-row">
+        <td colspan="100">3. Commissioning</td>
+      </tr><tr class="task-row">
+      <td class="col-id">15</td>
+      <td class="col-name" onclick="jumpToEdit(15)">
+        <div class="task-name-inner">
+          
+          <span>Bleed gas line &amp; first fire</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="phase-row">
+        <td colspan="100">4. Roaster Handover</td>
+      </tr><tr class="task-row">
+      <td class="col-id">16</td>
+      <td class="col-name" onclick="jumpToEdit(16)">
+        <div class="task-name-inner">
+          
+          <span>Undertake JSA</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">17</td>
+      <td class="col-name" onclick="jumpToEdit(17)">
+        <div class="task-name-inner">
+          
+          <span>Verify SOP</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">18</td>
+      <td class="col-name" onclick="jumpToEdit(18)">
+        <div class="task-name-inner">
+          
+          <span>Operator training</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">19</td>
+      <td class="col-name" onclick="jumpToEdit(19)">
+        <div class="task-name-inner">
+          <div class="milestone-tag"></div>
+          <span>Sign-off &amp; handover</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1" data-milestone="1"><div class="bar-wrap"><div class="bar-milestone">◆</div></div></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="phase-row">
+        <td colspan="100">5. DoE Preparation</td>
+      </tr><tr class="task-row">
+      <td class="col-id">20</td>
+      <td class="col-name" onclick="jumpToEdit(20)">
+        <div class="task-name-inner">
+          
+          <span>Verify DoE settings</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">21</td>
+      <td class="col-name" onclick="jumpToEdit(21)">
+        <div class="task-name-inner">
+          
+          <span>Set up measuring &amp; assessment equipment</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">22</td>
+      <td class="col-name" onclick="jumpToEdit(22)">
+        <div class="task-name-inner">
+          
+          <span>Conduct trial run &amp; verify procedure</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">23</td>
+      <td class="col-name" onclick="jumpToEdit(23)">
+        <div class="task-name-inner">
+          
+          <span>Collect feed seed and homogenise</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="phase-row">
+        <td colspan="100">6. DoE Execution</td>
+      </tr><tr class="task-row">
+      <td class="col-id">24</td>
+      <td class="col-name" onclick="jumpToEdit(24)">
+        <div class="task-name-inner">
+          
+          <span>Execute test program</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">25</td>
+      <td class="col-name" onclick="jumpToEdit(25)">
+        <div class="task-name-inner">
+          
+          <span>Sensory assessments</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">26</td>
+      <td class="col-name" onclick="jumpToEdit(26)">
+        <div class="task-name-inner">
+          
+          <span>Process results</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">27</td>
+      <td class="col-name" onclick="jumpToEdit(27)">
+        <div class="task-name-inner">
+          
+          <span>Prepare report</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">28</td>
+      <td class="col-name" onclick="jumpToEdit(28)">
+        <div class="task-name-inner">
+          <div class="milestone-tag"></div>
+          <span>DoE executed</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell" data-bar="1" data-milestone="1"><div class="bar-wrap"><div class="bar-milestone">◆</div></div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="phase-row">
+        <td colspan="100">7. Gate Review</td>
+      </tr><tr class="task-row">
+      <td class="col-id">29</td>
+      <td class="col-name" onclick="jumpToEdit(29)">
+        <div class="task-name-inner">
+          
+          <span>Compare findings to the 3 hypotheses</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="phase-row">
+        <td colspan="100">8. Wrap Up</td>
+      </tr><tr class="task-row">
+      <td class="col-id">30</td>
+      <td class="col-name" onclick="jumpToEdit(30)">
+        <div class="task-name-inner">
+          
+          <span>Project review – lessons learnt</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">31</td>
+      <td class="col-name" onclick="jumpToEdit(31)">
+        <div class="task-name-inner">
+          
+          <span>Consolidate all documentation (audit ready)</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr><tr class="task-row">
+      <td class="col-id">32</td>
+      <td class="col-name" onclick="jumpToEdit(32)">
+        <div class="task-name-inner">
+          <div class="milestone-tag"></div>
+          <span>Lupin Roast assessed</span>
+        </div>
+      </td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell" data-bar="1"><div class="bar-wrap">
+            <div class="bar-bg"></div>
+            
+          </div></td><td class="day-cell weekend"></td><td class="day-cell weekend" data-milestone="1"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell"></td><td class="day-cell weekend"></td><td class="day-cell weekend"></td></tr></tbody>
+      </table>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--blue)"></div>Scheduled</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--green)"></div>Complete</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--red)"></div>Milestone</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--wkend)"></div>Weekend</div>
+      <div class="legend-item" style="color:var(--muted);font-size:9px;font-family:&#39;DM Mono&#39;,monospace">TAP TASK NAME TO EDIT</div>
+    </div>
+  </div>
+
+  <!-- EDIT VIEW -->
+  <div id="view-edit" class="view edit-view">
+    <div class="edit-header">Tap a task to edit duration and % complete</div>
+    <div id="edit-list"></div>
+  </div>
+
+  <!-- SUMMARY VIEW -->
+  <div id="view-summary" class="view summary-view">
+    <div class="stat-grid" id="stat-grid"></div>
+    <div class="edit-header" style="margin-bottom:10px">Milestones</div>
+    <div class="milestone-list" id="milestone-list"></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Data ─────────────────────────────────────────────────────────────────────
+const PROJECT_START = new Date(2025, 5, 2); // June 2 2025
+const GANTT_DAYS = 98; // 14 weeks
+
+const PHASES = [
+  { name: "1. Assess Lupin Roast Concept" },
+  { name: "2. Site Preparation" },
+  { name: "3. Commissioning" },
+  { name: "4. Roaster Handover" },
+  { name: "5. DoE Preparation" },
+  { name: "6. DoE Execution" },
+  { name: "7. Gate Review" },
+  { name: "8. Wrap Up" },
+];
+
+const TASKS = [
+  { id:1,  phase:"1. Assess Lupin Roast Concept",  name:"Initiate project",                               dur:1,  deps:[],            ms:true  },
+  { id:2,  phase:"2. Site Preparation",             name:"Confirm electrical circuit specs",               dur:5,  deps:[1],           ms:false },
+  { id:3,  phase:"2. Site Preparation",             name:"Install dedicated circuit",                      dur:5,  deps:[2],           ms:false },
+  { id:4,  phase:"2. Site Preparation",             name:"Confirm gas supply pressure",                    dur:2,  deps:[1],           ms:false },
+  { id:5,  phase:"2. Site Preparation",             name:"Install gas line",                               dur:5,  deps:[4],           ms:false },
+  { id:6,  phase:"2. Site Preparation",             name:"Connect gas & electrical",                       dur:2,  deps:[3,5],         ms:false },
+  { id:7,  phase:"2. Site Preparation",             name:"Install exhaust ducting",                        dur:5,  deps:[1],           ms:false },
+  { id:8,  phase:"2. Site Preparation",             name:"Site Preparations complete",                     dur:1,  deps:[2,3,4,5,6,7], ms:true  },
+  { id:9,  phase:"2. Site Preparation",             name:"Frame focussing question & hypotheses",          dur:2,  deps:[1],           ms:false },
+  { id:10, phase:"2. Site Preparation",             name:"Review manual",                                  dur:2,  deps:[1],           ms:false },
+  { id:11, phase:"2. Site Preparation",             name:"Identify control variables",                     dur:2,  deps:[10],          ms:false },
+  { id:12, phase:"2. Site Preparation",             name:"Draft DoE schedule",                             dur:2,  deps:[11],          ms:false },
+  { id:13, phase:"2. Site Preparation",             name:"Draft SOP and JSA",                              dur:2,  deps:[12],          ms:false },
+  { id:14, phase:"2. Site Preparation",             name:"DoE Preparations complete",                      dur:1,  deps:[13],          ms:true  },
+  { id:15, phase:"3. Commissioning",                name:"Bleed gas line & first fire",                    dur:2,  deps:[8],           ms:false },
+  { id:16, phase:"4. Roaster Handover",             name:"Undertake JSA",                                  dur:2,  deps:[15,13],       ms:false },
+  { id:17, phase:"4. Roaster Handover",             name:"Verify SOP",                                     dur:2,  deps:[13,8],        ms:false },
+  { id:18, phase:"4. Roaster Handover",             name:"Operator training",                              dur:2,  deps:[17],          ms:false },
+  { id:19, phase:"4. Roaster Handover",             name:"Sign-off & handover",                            dur:1,  deps:[16,17,18],    ms:true  },
+  { id:20, phase:"5. DoE Preparation",              name:"Verify DoE settings",                            dur:5,  deps:[19],          ms:false },
+  { id:21, phase:"5. DoE Preparation",              name:"Set up measuring & assessment equipment",        dur:5,  deps:[19],          ms:false },
+  { id:22, phase:"5. DoE Preparation",              name:"Conduct trial run & verify procedure",           dur:2,  deps:[19],          ms:false },
+  { id:23, phase:"5. DoE Preparation",              name:"Collect feed seed and homogenise",               dur:1,  deps:[19],          ms:false },
+  { id:24, phase:"6. DoE Execution",                name:"Execute test program",                           dur:4,  deps:[20,21,22,23], ms:false },
+  { id:25, phase:"6. DoE Execution",                name:"Sensory assessments",                            dur:10, deps:[24],          ms:false },
+  { id:26, phase:"6. DoE Execution",                name:"Process results",                                dur:4,  deps:[25],          ms:false },
+  { id:27, phase:"6. DoE Execution",                name:"Prepare report",                                 dur:4,  deps:[26],          ms:false },
+  { id:28, phase:"6. DoE Execution",                name:"DoE executed",                                   dur:1,  deps:[27],          ms:true  },
+  { id:29, phase:"7. Gate Review",                  name:"Compare findings to the 3 hypotheses",           dur:5,  deps:[28],          ms:false },
+  { id:30, phase:"8. Wrap Up",                      name:"Project review – lessons learnt",                dur:4,  deps:[29],          ms:false },
+  { id:31, phase:"8. Wrap Up",                      name:"Consolidate all documentation (audit ready)",    dur:3,  deps:[30],          ms:false },
+  { id:32, phase:"8. Wrap Up",                      name:"Lupin Roast assessed",                           dur:1,  deps:[31],          ms:true  },
+];
+
+// State - pct stored as 0-100
+const state = {};
+TASKS.forEach(t => { state[t.id] = { dur: t.dur, pct: 0 }; });
+
+// ── Working day helpers ───────────────────────────────────────────────────────
+function isWorkday(d) { return d.getDay() !== 0 && d.getDay() !== 6; }
+
+function addWorkdays(startDate, n) {
+  let d = new Date(startDate);
+  let added = 0;
+  while (added < n) {
+    d.setDate(d.getDate() + 1);
+    if (isWorkday(d)) added++;
+  }
+  return d;
+}
+
+function dayOffset(date) {
+  // calendar day offset from PROJECT_START
+  return Math.round((date - PROJECT_START) / 86400000);
+}
+
+// ── Schedule resolution ───────────────────────────────────────────────────────
+function resolveSchedule() {
+  const taskById = {};
+  TASKS.forEach(t => taskById[t.id] = t);
+
+  const startDates = {};
+  const memo = {};
+
+  function getStart(id) {
+    if (memo[id]) return memo[id];
+    const t = taskById[id];
+    const deps = t.deps;
+    if (!deps.length) {
+      memo[id] = new Date(PROJECT_START);
+      return memo[id];
+    }
+    const endDates = deps.map(depId => {
+      const depStart = getStart(depId);
+      const depDur = state[depId].dur;
+      let end = addWorkdays(depStart, depDur);
+      // next workday
+      while (!isWorkday(end)) end.setDate(end.getDate() + 1);
+      return end;
+    });
+    let latest = endDates.reduce((a, b) => a > b ? a : b);
+    while (!isWorkday(latest)) latest.setDate(latest.getDate() + 1);
+    memo[id] = latest;
+    return latest;
+  }
+
+  const result = {};
+  TASKS.forEach(t => {
+    const sd = getStart(t.id);
+    const dur = state[t.id].dur;
+    const ed = addWorkdays(sd, dur);
+    result[t.id] = { start: sd, end: ed, startOff: dayOffset(sd), endOff: dayOffset(ed) };
+  });
+  return result;
+}
+
+// ── Date formatting ───────────────────────────────────────────────────────────
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAYS_SHORT = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+function fmt(d) { return `${d.getDate()} ${MONTHS[d.getMonth()]}`; }
+function fmtFull(d) { return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`; }
+
+// ── Gantt rendering ───────────────────────────────────────────────────────────
+function renderGantt() {
+  const sched = resolveSchedule();
+  const head  = document.getElementById('gantt-head');
+  const body  = document.getElementById('gantt-body');
+
+  // Build date array
+  const dates = [];
+  for (let i = 0; i < GANTT_DAYS; i++) {
+    const d = new Date(PROJECT_START);
+    d.setDate(d.getDate() + i);
+    dates.push(d);
+  }
+
+  // ── Header: week row ──
+  let weekHtml = `<tr class="week-row">
+    <th class="col-id"></th>
+    <th class="col-name"></th>`;
+  let d = 0;
+  while (d < GANTT_DAYS) {
+    const day = dates[d];
+    // count days in this week (up to next Mon or end)
+    let span = 1;
+    while (d + span < GANTT_DAYS && dates[d + span].getDay() !== 1) span++;
+    const wkNum = Math.floor(d / 7) + 1;
+    weekHtml += `<th colspan="${span}" style="text-align:left;padding-left:4px">Wk ${wkNum} · ${fmt(day)}</th>`;
+    d += span;
+  }
+  weekHtml += '</tr>';
+
+  // ── Header: day row ──
+  let dayHtml = `<tr class="day-row">
+    <th class="col-id">ID</th>
+    <th class="col-name">Task</th>`;
+  dates.forEach(day => {
+    const wknd = day.getDay() === 0 || day.getDay() === 6;
+    dayHtml += `<th class="${wknd ? 'weekend' : ''}">${DAYS_SHORT[day.getDay()]}</th>`;
+  });
+  dayHtml += '</tr>';
+
+  head.innerHTML = weekHtml + dayHtml;
+
+  // ── Body ──
+  let bodyHtml = '';
+  let lastPhase = null;
+
+  TASKS.forEach(t => {
+    const sch = sched[t.id];
+    const pct = state[t.id].pct / 100;
+
+    // Phase header row
+    if (t.phase !== lastPhase) {
+      lastPhase = t.phase;
+      bodyHtml += `<tr class="phase-row">
+        <td colspan="${GANTT_DAYS + 2}">${t.phase}</td>
+      </tr>`;
+    }
+
+    // Task row
+    bodyHtml += `<tr class="task-row">
+      <td class="col-id">${t.id}</td>
+      <td class="col-name" onclick="jumpToEdit(${t.id})">
+        <div class="task-name-inner">
+          ${t.ms ? '<div class="milestone-tag"></div>' : ''}
+          <span>${t.name}</span>
+        </div>
+      </td>`;
+
+    dates.forEach((day, di) => {
+      const wknd = day.getDay() === 0 || day.getDay() === 6;
+      const inBar = di >= sch.startOff && di < sch.endOff && !wknd;
+      const calSpan = sch.endOff - sch.startOff;
+      const progressOff = sch.startOff + Math.round(calSpan * pct);
+      const inProgress = inBar && di < progressOff;
+
+      let cellContent = '';
+      const isMsCell = t.ms && di === sch.endOff - 1;
+      if (inBar) {
+        if (isMsCell) {
+          cellContent = `<div class="bar-wrap"><div class="bar-milestone">&#9670;</div></div>`;
+        } else {
+          cellContent = `<div class="bar-wrap">
+            <div class="bar-bg"></div>
+            ${inProgress ? '<div class="bar-progress" style="width:100%"></div>' : ''}
+          </div>`;
+        }
+      }
+
+      // data-* attributes let print CSS colour TDs directly (abs divs don't print)
+      let attrs = `class="day-cell${wknd ? ' weekend' : ''}"`;
+      if (inBar)      attrs += ' data-bar="1"';
+      if (inProgress) attrs += ' data-progress="1"';
+      if (isMsCell)   attrs += ' data-milestone="1"';
+
+      bodyHtml += `<td ${attrs}>${cellContent}</td>`;
+    });
+
+    bodyHtml += '</tr>';
+  });
+
+  body.innerHTML = bodyHtml;
+
+  // Update header meta
+  const lastTask = sched[32];
+  document.getElementById('hdr-end').textContent = fmtFull(lastTask.end);
+  updateHeaderPct();
+}
+
+function updateHeaderPct() {
+  const total = TASKS.length;
+  const done = TASKS.filter(t => state[t.id].pct === 100).length;
+  const avg = Math.round(TASKS.reduce((s, t) => s + state[t.id].pct, 0) / total);
+  document.getElementById('hdr-pct').textContent = avg + '%';
+}
+
+// ── Edit view ─────────────────────────────────────────────────────────────────
+function renderEdit() {
+  const list = document.getElementById('edit-list');
+  let html = '';
+  let lastPhase = null;
+
+  TASKS.forEach(t => {
+    if (t.phase !== lastPhase) {
+      lastPhase = t.phase;
+      html += `<div style="font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;
+               letter-spacing:.07em;color:var(--blue);padding:14px 0 6px;border-bottom:2px solid var(--blue);
+               margin-bottom:8px">${t.phase}</div>`;
+    }
+
+    const deps = t.deps.length ? t.deps.join(', ') : 'none';
+    html += `
+    <div class="task-card" id="card-${t.id}">
+      <div class="task-card-header" onclick="toggleCard(${t.id})">
+        <div class="task-card-id">${t.id}</div>
+        <div class="task-card-name">${t.name}</div>
+        ${t.ms ? '<div class="task-card-ms"></div>' : ''}
+        <div class="task-card-dur" id="dur-label-${t.id}">${state[t.id].dur}d</div>
+      </div>
+      <div class="task-card-body" id="body-${t.id}">
+        <div class="field-row">
+          <div class="field-label">Duration</div>
+          <input type="number" min="1" max="60" value="${state[t.id].dur}"
+            id="dur-input-${t.id}"
+            onchange="updateDur(${t.id}, this.value)"
+            oninput="updateDur(${t.id}, this.value)">
+          <div class="field-value" style="color:var(--muted);font-size:11px">working days</div>
+        </div>
+        <div class="field-row">
+          <div class="field-label">% Complete</div>
+          <input type="range" min="0" max="100" step="5" value="${state[t.id].pct}"
+            id="pct-input-${t.id}"
+            oninput="updatePct(${t.id}, this.value)">
+          <div class="pct-label" id="pct-label-${t.id}">${state[t.id].pct}%</div>
+        </div>
+        <div class="field-row">
+          <div class="field-label">Depends on</div>
+          <div class="deps-list">${deps}</div>
+        </div>
+        <div class="field-row">
+          <div class="field-label">Milestone</div>
+          <div class="field-value">${t.ms ? '◆ Yes' : 'No'}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  list.innerHTML = html;
+}
+
+function toggleCard(id) {
+  const body = document.getElementById(`body-${id}`);
+  const hdr  = body.previousElementSibling;
+  const open = body.classList.toggle('open');
+  hdr.classList.toggle('open', open);
+}
+
+function jumpToEdit(id) {
+  showView('edit');
+  setTimeout(() => {
+    const card = document.getElementById(`card-${id}`);
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const body = document.getElementById(`body-${id}`);
+      const hdr  = body.previousElementSibling;
+      body.classList.add('open');
+      hdr.classList.add('open');
+    }
+  }, 100);
+}
+
+function updateDur(id, val) {
+  const n = Math.max(1, parseInt(val) || 1);
+  state[id].dur = n;
+  document.getElementById(`dur-label-${id}`).textContent = n + 'd';
+  renderGantt();
+  renderSummary();
+  showToast(`Task ${id} → ${n} working days`);
+}
+
+function updatePct(id, val) {
+  state[id].pct = parseInt(val);
+  document.getElementById(`pct-label-${id}`).textContent = val + '%';
+  renderGantt();
+  renderSummary();
+}
+
+// ── Summary view ──────────────────────────────────────────────────────────────
+function renderSummary() {
+  const sched = resolveSchedule();
+
+  const totalDays = TASKS.reduce((s, t) => s + state[t.id].dur, 0);
+  const avgPct    = Math.round(TASKS.reduce((s, t) => s + state[t.id].pct, 0) / TASKS.length);
+  const done      = TASKS.filter(t => state[t.id].pct === 100).length;
+  const endDate   = sched[32].end;
+  const totalCalDays = Math.round((endDate - PROJECT_START) / 86400000);
+  const totalWkDays  = Math.round(totalCalDays * 5 / 7);
+
+  document.getElementById('stat-grid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Overall Progress</div>
+      <div class="stat-value">${avgPct}%</div>
+      <div class="progress-bar-outer"><div class="progress-bar-inner" style="width:${avgPct}%"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Tasks Complete</div>
+      <div class="stat-value">${done}<span style="font-size:14px;color:var(--muted)">/${TASKS.length}</span></div>
+      <div class="stat-sub">${TASKS.length - done} remaining</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Project End</div>
+      <div class="stat-value" style="font-size:16px">${fmtFull(endDate)}</div>
+      <div class="stat-sub">${totalCalDays} calendar days</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Work</div>
+      <div class="stat-value">${totalDays}<span style="font-size:14px;color:var(--muted)">d</span></div>
+      <div class="stat-sub">working days planned</div>
+    </div>`;
+
+  const milestones = TASKS.filter(t => t.ms);
+  let msHtml = '';
+  milestones.forEach(t => {
+    const sch = sched[t.id];
+    const pct = state[t.id].pct;
+    msHtml += `<div class="milestone-item">
+      <div class="ms-diamond"></div>
+      <div class="ms-name">${t.name}</div>
+      <div class="ms-date">${fmt(sch.end)}</div>
+      ${pct === 100 ? '<div class="ms-done">✓ Done</div>' : ''}
+    </div>`;
+  });
+  document.getElementById('milestone-list').innerHTML = msHtml;
+}
+
+// ── View switching ────────────────────────────────────────────────────────────
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`view-${name}`).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => {
+    if (t.textContent.trim().toLowerCase().startsWith(name)) t.classList.add('active');
+  });
+  if (name === 'edit') renderEdit();
+  if (name === 'summary') renderSummary();
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+// ── Save / Load / Reset ──────────────────────────────────────────────────────
+function saveData() {
+  const data = {
+    version: 1,
+    savedAt: new Date().toISOString(),
+    projectName: "Ambex YM Roaster – Lupin Roast Feasibility Study",
+    tasks: {}
+  };
+  TASKS.forEach(t => {
+    data.tasks[t.id] = { dur: state[t.id].dur, pct: state[t.id].pct };
+  });
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  a.href     = url;
+  a.download = `lupin-gantt-${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Progress saved – move file to Google Drive');
+}
+
+function loadData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.tasks) throw new Error('Invalid file');
+      TASKS.forEach(t => {
+        if (data.tasks[t.id]) {
+          state[t.id].dur = data.tasks[t.id].dur || t.dur;
+          state[t.id].pct = data.tasks[t.id].pct || 0;
+        }
+      });
+      renderGantt();
+      if (document.getElementById('view-edit').classList.contains('active')) renderEdit();
+      if (document.getElementById('view-summary').classList.contains('active')) renderSummary();
+      showToast('Progress loaded ✓');
+    } catch(err) {
+      showToast('Error: invalid data file');
+    }
+    // Reset input so same file can be reloaded if needed
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function resetData() {
+  if (!confirm('Reset all durations and progress back to defaults?')) return;
+  TASKS.forEach(t => { state[t.id] = { dur: t.dur, pct: 0 }; });
+  renderGantt();
+  if (document.getElementById('view-edit').classList.contains('active')) renderEdit();
+  if (document.getElementById('view-summary').classList.contains('active')) renderSummary();
+  showToast('Reset to defaults');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+renderGantt();
+</script>
+
+
+</body></html>
